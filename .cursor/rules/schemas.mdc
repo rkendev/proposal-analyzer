@@ -1,0 +1,38 @@
+---
+description: Pydantic v2 schema standards
+alwaysApply: true
+---
+
+# Schema Standards
+
+## Location
+All schemas in src/schemas/.
+One file per agent output + common.py for shared models.
+
+## Rules
+- All fields must have explicit types. No Any.
+- All numeric scores: int, ge=0, le=10.
+  Document range in field description AND in api-contract.md.
+- All list fields: default_factory=list. Never None.
+- All enum fields: use Python Enum or Literal types.
+- Add Field(description="...") to every field.
+  Include unit, range, and example in the description.
+
+## Example
+```python
+class JobAnalysis(BaseModel):
+    scope_clarity_score: int = Field(
+        ge=0, le=10,
+        description="Clarity of job scope. int 0-10. 10=crystal clear."
+    )
+    required_skills: list[str] = Field(
+        default_factory=list,
+        description="Extracted required skills. Empty list if none stated."
+    )
+```
+
+## No aliases in output schemas
+Do not use alias= on fields that appear in agent output.
+Aliases cause LLM confusion when field names differ from
+JSON keys. Use model_config serialization_alias only where
+needed for final API response formatting.

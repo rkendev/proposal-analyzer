@@ -1,0 +1,12 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Note: startCommand is intentionally absent.
+# The Dockerfile CMD handles startup with sh -c for PORT expansion.
+# Do not add startCommand here — it will conflict with the Dockerfile CMD.

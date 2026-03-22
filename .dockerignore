@@ -1,0 +1,35 @@
+# Environment — NEVER copy into Docker image
+.env
+.env.*
+
+# Virtual environment — not needed, Docker installs from requirements.txt
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Tests — not needed in production image
+tests/
+
+# Docs — not needed in production image
+docs/
+
+# IDE and OS
+.idea/
+.vscode/
+.git/
+.gitignore
+*.md
+*.log
+
+# CI config
+.github/
+
+# Cursor config
+.cursor/
+.cursorignore

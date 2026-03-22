@@ -1,0 +1,43 @@
+---
+description: Test patterns and coverage standards
+alwaysApply: true
+---
+
+# Testing Standards
+
+## Three test types (all required)
+
+### tests/unit/
+Mocked LLM calls. One test file per agent.
+Tests: schema validation, error propagation, field defaults.
+Run on every commit.
+
+### tests/integration/
+Test the live API endpoints.
+Must include test_api_contract.py which:
+  - Calls real /analyze and /generate endpoints (mocked LLM)
+  - Validates every field against api-contract.md
+  - Checks numeric field ranges (scores 0-10, rates > 0)
+  - Checks no schema field names in prose output fields
+
+### tests/acceptance/
+Real LLM calls. Behavioral assertions.
+Tag: @pytest.mark.acceptance
+Run separately — not in default pytest run.
+Not mocked. Calls real API with real model.
+Tests:
+  - "bad proposal" → overall_score <= 4
+  - "strong proposal" → overall_score >= 7
+  - No snake_case field names in any prose output field
+  - win_probability_score in range 0-10
+
+## Gate
+pytest (unit + integration) must pass before every commit.
+acceptance tests run before every Railway deploy.
+
+## conftest.py
+Golden fixtures in tests/conftest.py:
+  - sample_analyze_request: realistic job posting + weak proposal
+  - sample_generate_request: realistic job posting only
+  - sample_job_analysis: valid JobAnalysis for agent testing
+  - sample_rate_analysis: valid RateAnalysis for agent testing

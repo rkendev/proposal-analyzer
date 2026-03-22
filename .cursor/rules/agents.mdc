@@ -1,0 +1,34 @@
+---
+description: Agent design standards for Freelance Proposal Analyzer
+alwaysApply: true
+---
+
+# Agent Standards
+
+## Structure
+Every agent is a standalone function in src/agents/.
+Signature: agent_name(state: ValidatorState) -> dict
+
+## Output
+Every agent returns a typed Pydantic v2 model.
+No raw strings. No dicts. No untyped returns.
+
+## FORBIDDEN VOCABULARY rule (non-negotiable)
+Every agent prompt MUST include a block like this:
+
+  FORBIDDEN VOCABULARY — never use these exact terms in output:
+  [list every field name from the output schema here]
+  Write in clear natural language only.
+
+This prevents schema field leakage into user-facing prose.
+(This failure cost 3 debugging sessions in Project 1.)
+
+## Model routing
+CHEAP_MODEL  → Job Intelligence, Rate Intelligence
+STRONG_MODEL → Proposal Analyst, Win Strategy
+Source from settings.cheap_model_name / settings.strong_model_name
+
+## Error handling
+Raise AgentCallError on LLM call failure.
+Raise SchemaValidationError on Pydantic parse failure.
+Never let raw exceptions propagate to the orchestrator.

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit and integration tests
+        env:
+          CHEAP_MODEL_NAME: "anthropic/claude-haiku-4-5-20251001"
+          STRONG_MODEL_NAME: "anthropic/claude-sonnet-4-5-20250929"
+          ANTHROPIC_API_KEY: "test-key-ci-mocked"
+          ALLOWED_ORIGIN: "http://localhost:3000"
+        run: pytest tests/unit tests/integration -v --tb=short
+
+      - name: Verify no .env in repo
+        run: |
+          count=$(git ls-files | grep -c "^\.env$" || true)
+          if [ "$count" -gt "0" ]; then
+            echo "ERROR: .env file is tracked by git"
+            exit 1
+          fi
+          echo "OK: .env not in repo"
+
+      - name: Verify .dockerignore contains .env
+        run: |
+          if ! grep -q "^\.env$" .dockerignore; then
+            echo "ERROR: .dockerignore does not exclude .env"
+            exit 1
+          fi
+          echo "OK: .dockerignore excludes .env"

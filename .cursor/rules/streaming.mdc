@@ -1,0 +1,43 @@
+---
+description: SSE streaming implementation standards
+alwaysApply: true
+---
+
+# SSE Streaming Standards
+
+## Why streaming is required
+Analysis takes 60-120 seconds. No streaming = black-box wait.
+Black-box wait = users close the tab = demo fails.
+(Project 1 shipped without streaming. It is required here.)
+
+## Backend pattern (FastAPI)
+
+POST /analyze or /generate:
+  - Validate request
+  - Generate job_id (uuid4)
+  - Store job state in memory dict
+  - Start background task (asyncio)
+  - Return {job_id} immediately (< 200ms)
+
+GET /stream/{job_id}:
+  - Returns StreamingResponse with media_type="text/event-stream"
+  - Emits events as agents complete:
+
+```python
+async def event_generator(job_id: str):
+    # agent_complete events
+    yield f"event: agent_complete\ndata: {json.dumps({agent: job_intelligence, progress: 25})}\n\n"
+    yield f"event: agent_complete\ndata: {json.dumps({agent: rate_intelligence, progress: 50})}\n\n"
+    yield f"event: agent_complete\ndata: {json.dumps({agent: proposal_analyst, progress: 75})}\n\n"
+    yield f"event: agent_complete\ndata: {json.dumps({agent: win_strategy, progress: 100})}\n\n"
+    # final complete event
+    yield f"event: complete\ndata: {report_json}\n\n"
+```
+
+## Event schema
+agent_complete: {"agent": str, "progress": int (25/50/75/100)}
+complete:       ProposalReport as JSON string
+error:          {"message": str}
+
+## Frontend pattern
+See LOVABLE.md SSE Integration Pattern section.

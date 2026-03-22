@@ -1,0 +1,47 @@
+---
+description: FastAPI design standards
+alwaysApply: true
+---
+
+# FastAPI Standards
+
+## CORS — never use wildcard
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.allowed_origin],  # from env var
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type", "Accept"],
+)
+```
+
+## Rate limiting
+Use slowapi. 10/minute/IP on POST routes.
+```python
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+limiter = Limiter(key_func=get_remote_address)
+
+@app.post("/analyze")
+@limiter.limit("10/minute")
+async def analyze(...): ...
+```
+
+## Health endpoint (required)
+```python
+@app.get("/health")
+async def health():
+    return {"status": "ok", "version": "1.0.0"}
+```
+This is called by Lovable on page load to pre-warm Railway.
+Never disable or rename this endpoint.
+
+## Error responses
+AgentCallError      → HTTP 422 with error detail
+SchemaValidationError → HTTP 422 with error detail
+Unexpected exception → HTTP 500 with generic message
+Never expose raw Python tracebacks in responses.
+
+## Async
+All endpoints must be async def.
+LLM calls use await.
