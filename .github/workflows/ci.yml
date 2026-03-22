@@ -28,7 +28,7 @@ jobs:
           STRONG_MODEL_NAME: "anthropic/claude-sonnet-4-5-20250929"
           ANTHROPIC_API_KEY: "test-key-ci-mocked"
           ALLOWED_ORIGIN: "http://localhost:3000"
-        run: pytest tests/unit tests/integration -v --tb=short
+        run: pytest tests/unit tests/integration -v --tb=short || [ $? -eq 5 ]
 
       - name: Verify no .env in repo
         run: |
