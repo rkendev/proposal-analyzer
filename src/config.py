@@ -7,7 +7,7 @@ In local dev: set in .env file (never committed to git).
 """
 
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 
 class Settings(BaseSettings):
@@ -36,9 +36,10 @@ class Settings(BaseSettings):
     port: int = Field(default=8001)
     api_version: str = Field(default="1.0.0")
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
 
 
 settings = Settings()
