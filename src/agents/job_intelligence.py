@@ -74,6 +74,17 @@ def _extract_message_content(response: object) -> str | None:
     return str(content)
 
 
+def _sanitize_json_text(raw: str) -> str:
+    text = raw.strip()
+    if text.startswith("```json"):
+        text = text[len("```json") :].strip()
+    elif text.startswith("```"):
+        text = text[len("```") :].strip()
+    if text.endswith("```"):
+        text = text[: -len("```")].strip()
+    return text
+
+
 def job_intelligence_agent(state: ValidatorState) -> dict:
     """
     Extract structured JobAnalysis from the job posting via CHEAP_MODEL.
@@ -102,9 +113,12 @@ def job_intelligence_agent(state: ValidatorState) -> dict:
     raw = _extract_message_content(response)
     if raw is None or not raw.strip():
         raise AgentCallError(_AGENT_NAME, "empty LLM response")
+    cleaned = _sanitize_json_text(raw)
+    if not cleaned:
+        raise AgentCallError(_AGENT_NAME, "empty LLM response")
 
     try:
-        job_analysis = JobAnalysis.model_validate_json(raw.strip())
+        job_analysis = JobAnalysis.model_validate_json(cleaned)
     except ValidationError as e:
         raise SchemaValidationError(_AGENT_NAME, str(e)) from e
     except ValueError as e:

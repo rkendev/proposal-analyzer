@@ -23,5 +23,5 @@ Arguments for B: Rates change significantly by technology
   grounded in a live data source is more defensible and
   provides a stronger portfolio signal (AgenticRAG pattern).
 
-Decision: [Fill in during Phase 3]
-Rationale: [Fill in during Phase 3]
+Decision: Option A — use LLM training knowledge only (no web_search tool call) for Phase 3.
+Rationale: Keeps latency and cost low for v1 while avoiding external tool-call failure modes; rate guidance is sufficient for this phase.
