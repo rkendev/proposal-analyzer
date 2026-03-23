@@ -18,7 +18,7 @@ from schemas.win_strategy import WinStrategy
 class ValidatorState(BaseModel):
     """Graph state passed between agents. extra=forbid catches typos early."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     mode: Literal["analyze", "generate"] = Field(
         description="Pipeline mode: analyze (job + draft) or generate (job only)."
