@@ -105,7 +105,7 @@ proposal-analyzer/
 ├── tests/
 │   ├── unit/           # Mocked LLM calls
 │   ├── integration/    # API contract tests
-│   └── acceptance/     # Real LLM calls, behavioral tests
+│   └── acceptance/     # Real LLM calls, behavioral tests (planned — not yet implemented) (planned — not yet implemented)
 ├── docs/specs/
 │   ├── project-spec.md
 │   ├── deployment-spec.md

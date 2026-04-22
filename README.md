@@ -138,7 +138,7 @@ src/
 tests/
 ├── unit/                       # Mocked LLM — schema, agent, and error tests
 ├── integration/                # API contract and orchestrator pipeline tests
-└── acceptance/                 # Real LLM behavioral tests (run pre-deploy)
+└── acceptance/                 # Real LLM behavioral tests (planned — not yet implemented)
 docs/specs/
 ├── project-spec.md             # Agent responsibilities and phase plan
 ├── deployment-spec.md          # Docker, CORS, SSE, Railway config
